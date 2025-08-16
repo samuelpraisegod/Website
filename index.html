@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MarketFlowprop - Co-Fund Prop Accounts</title>
+    <style>
+        :root {
+            --primary: #0a1f44;
+            --secondary: #d4af37;
+            --light-bg: #f9f9f9;
+            --white: #fff;
+            --text: #333;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            background-color: var(--light-bg);
+            color: var(--text);
+            scroll-behavior: smooth;
+        }
+        header {
+            background: linear-gradient(rgba(10,31,68,0.8), rgba(10,31,68,0.8)),
+                        url('https://images.unsplash.com/photo-1565372919231-1ec5ce5f1c5d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80') center/cover no-repeat;
+            color: var(--white);
+            padding: 3rem 1rem;
+            text-align: center;
+        }
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        header p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: auto;
+            opacity: 0.9;
+        }
+        .cta-btn {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 0.8rem 1.5rem;
+            background: var(--secondary);
+            color: var(--primary);
+            font-weight: bold;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+        .cta-btn:hover {
+            background: #c49d2a;
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 1rem;
+        }
+        section {
+            margin: 2rem 0;
+        }
+        h2 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        .feature-card {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 10px var(--shadow);
+            transition: transform 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        .feature-card svg {
+            width: 40px;
+            height: 40px;
+            fill: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+        form {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px var(--shadow);
+            display: grid;
+            gap: 1rem;
+            max-width: 600px;
+            margin: auto;
+        }
+        label {
+            font-weight: bold;
+        }
+        input, select {
+            padding: 0.7rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+        }
+        button {
+            padding: 0.8rem;
+            background: var(--secondary);
+            color: var(--primary);
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #c49d2a;
+        }
+        footer {
+            background: var(--primary);
+            color: var(--white);
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>MarketFlowprop</h1>
+        <p>The trusted middleman platform for co-funding prop firm accounts securely and transparently.</p>
+        <a href="#signup" class="cta-btn">Get Started</a>
+    </header>
+
+    <main class="container">
+        <section>
+            <h2>Why Choose MarketFlowprop?</h2>
+            <div class="features">
+                <div class="feature-card">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2l1.42 4.58L18 8l-3.42 2.42L14 15l-2-1.5L10 15l.42-4.58L7 8l4.58-.42L12 2z"/></svg>
+                    <h3>Secure Transactions</h3>
+                    <p>Your funds are handled with escrow-level security.</p>
+                </div>
+                <div class="feature-card">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2 6l6 6-6 6V6m8-4h12v2H10V2m0 6h12v2H10V8m0 6h12v2H10v-2m0 6h12v2H10v-2z"/></svg>
+                    <h3>Fair Profit Splits</h3>
+                    <p>Agree on profit sharing before you start trading.</p>
+                </div>
+                <div class="feature-card">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 11h-1V8a4 4 0 0 0-8 0v3H6v10h12V11z"/></svg>
+                    <h3>Trusted Partnerships</h3>
+                    <p>We connect you only with verified traders/investors.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="signup">
+            <h2>Sign Up & Start Co-Funding</h2>
+            <form id="signup-form">
+                <label for="name">Full Name:</label>
+                <input id="name" name="name" required>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="role">Role:</label>
+                <select id="role" name="role" required>
+                    <option value="">Select Role</option>
+                    <option value="trader">Trader</option>
+                    <option value="investor">Investor</option>
+                </select>
+
+                <label for="amount">Amount to Fund (USD):</label>
+                <input type="number" id="amount" name="amount" min="1" required>
+
+                <label for="profit-split">Profit Split (% Trader):</label>
+                <select id="profit-split" name="profit-split" required>
+                    <option value="">Select Split</option>
+                    <option value="50">50/50</option>
+                    <option value="60">60/40</option>
+                    <option value="70">70/30</option>
+                    <option value="custom">Custom</option>
+                </select>
+
+                <label><input type="checkbox" name="agree-terms" required> I agree to the <a href="nda.html" target="_blank">terms & conditions and NDA</a></label>
+
+                <button type="submit">Submit</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 MarketFlowprop | Contact: samuelpraisegod90@gmail.com</p>
+    </footer>
+
+    <script>
+    document.getElementById('signup-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const data = Object.fromEntries(new FormData(form).entries());
+        try {
+            console.log('Form Submitted:', data);
+            alert('✅ Signup submitted successfully!');
+            form.reset();
+        } catch (err) {
+            alert('❌ Submission failed. Try again.');
+        }
+    });
+    </script>
+</body>
+</html>
