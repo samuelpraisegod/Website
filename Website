@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>MarketFlowprop — Secure Profit Sharing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0f1724;       /* deep navy */
+    --card:#0b1220;
+    --muted:#9aa6b2;
+    --gold:#d4af37;
+    --white:#ffffff;
+    --glass: rgba(255,255,255,0.04);
+    --shadow: 0 8px 30px rgba(2,6,23,0.6);
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+    background: linear-gradient(180deg,#071025 0%, #071827 50%), #071827;
+    color:var(--white);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+
+  /* --- top nav --- */
+  .nav {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index:999;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    padding:14px 28px;
+    transition: background 300ms, box-shadow 300ms, backdrop-filter 300ms;
+    background: transparent;
+    backdrop-filter: blur(0px);
+  }
+  .nav.solid{
+    background: linear-gradient(180deg, rgba(2,6,23,0.85), rgba(2,6,23,0.7));
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(6px);
+  }
+  .brand { display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--white) }
+  .brand .logo {
+    width:44px;height:44px;border-radius:10px;
+    background: linear-gradient(135deg,var(--gold),#f7df8b);
+    display:inline-grid;place-items:center;color:#071827;font-weight:800; font-size:16px;
+    box-shadow: 0 6px 20px rgba(212,175,55,0.14), inset 0 -6px 12px rgba(255,255,255,0.08);
+  }
+  .brand h1{font-size:16px;margin:0;font-weight:700}
+  .nav-links{display:flex;gap:18px;align-items:center}
+  .nav-links a{color:var(--white);text-decoration:none;font-weight:600;opacity:0.95}
+  .btn-ghost{
+    padding:8px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);
+    background:transparent;color:var(--white);cursor:pointer;font-weight:700
+  }
+  .btn-primary{
+    background:linear-gradient(90deg,var(--gold),#f1d072);
+    color:#071827;padding:10px 16px;border-radius:10px;border:none;font-weight:800;cursor:pointer;
+    box-shadow: 0 8px 24px rgba(212,175,55,0.14);
+  }
+
+  /* --- hero --- */
+  .hero{
+    display:flex;
+    gap:32px;
+    align-items:center;
+    justify-content:space-between;
+    max-width:1200px;margin:120px auto 28px;padding:36px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow:hidden;
+  }
+  .hero-left{flex:1;min-width:280px}
+  .eyebrow{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.04);color:var(--muted);font-size:13px;margin-bottom:12px}
+  h2{font-size:34px;margin:0 0 14px 0;line-height:1.04}
+  p.lead{color:var(--muted);margin:0 0 22px;max-width:62ch}
+  .cta-row{display:flex;gap:12px;align-items:center}
+  .cta-row .secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px 14px;border-radius:10px;color:var(--white);font-weight:700}
+  .stats{display:flex;gap:18px;margin-top:20px}
+  .stat{background:var(--card);padding:12px 14px;border-radius:10px;text-align:left}
+  .stat strong{display:block;font-size:18px}
+  /* hero art */
+  .hero-right{width:440px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+  .device{
+    width:360px;height:220px;border-radius:12px;background:
+    linear-gradient(180deg, rgba(10,15,25,0.6), rgba(0,0,0,0.35));
+    border:1px solid rgba(255,255,255,0.03);box-shadow: 0 10px 40px rgba(2,6,23,0.7);padding:18px;
+  }
+  .chart {height:100%;border-radius:8px;background:linear-gradient(180deg,#062036, #02121b);display:flex;align-items:center;justify-content:center;color:var(--muted)}
+
+  /* --- sections --- */
+  .container{max-width:1100px;margin:36px auto;padding:0 20px}
+  .grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .card{background:var(--card);padding:22px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+  .card h3{margin:0 0 8px;color:var(--white)}
+  .muted{color:var(--muted)}
+
+  /* testimonials */
+  .testimonials{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .testimonial{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:18px;border-radius:12px}
+
+  /* footer */
+  footer{padding:40px 20px;text-align:center;color:var(--muted);border-top:1px solid rgba(255,255,255,0.02);margin-top:40px}
+
+  /* sign-up modal */
+  .modal { display:none; position:fixed; inset:0; z-index:1200; background:rgba(2,6,23,0.6); align-items:center; justify-content:center }
+  .modal .box{background:linear-gradient(180deg,#0b1220,#071021);padding:20px;border-radius:12px;width:420px;max-width:92%;box-shadow:var(--shadow)}
+  .modal input, .modal select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--white);margin-top:10px}
+  .modal .small{font-size:13px;color:var(--muted);margin-top:8px}
+  .close-x{float:right;cursor:pointer;color:var(--muted)}
+
+  /* responsive */
+  @media (max-width:900px){
+    .hero{flex-direction:column;align-items:flex-start;padding:20px}
+    .hero-right{width:100%}
+    .testimonials{grid-template-columns:1fr}
+  }
+  @media (max-width:520px){
+    h2{font-size:26px}
+    .nav { padding:10px 14px }
+    .brand h1{display:none}
+  }
+
+  /* small animation */
+  .fade-in {animation:fadeInUp 700ms ease both}
+  @keyframes fadeInUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<header class="nav" id="nav">
+  <a class="brand" href="#">
+    <span class="logo" aria-hidden="true">MF</span>
+    <h1>MarketFlowprop</h1>
+  </a>
+  <nav class="nav-links" aria-label="Primary">
+    <a href="#about">About</a>
+    <a href="#features">Features</a>
+    <a href="#how">How it works</a>
+    <button class="btn-primary" id="openSignup">Sign Up</button>
+  </nav>
+</header>
+
+<!-- HERO -->
+<main>
+  <section class="hero fade-in" aria-labelledby="heroTitle">
+    <div class="hero-left">
+      <div class="eyebrow">Trusted · Transparent · Neutral</div>
+      <h2 id="heroTitle">Co-fund prop accounts with confidence — secure escrow & fair splits</h2>
+      <p class="lead">MarketFlowprop is the neutral middleman that connects traders and investors, secures deposits, enforces agreed terms, and automates fair profit distribution.</p>
+
+      <div class="cta-row">
+        <button class="btn-primary" id="ctaSignup">Create account — it's free</button>
+        <button class="secondary btn-ghost" onclick="scrollToSection('#features')">How it works</button>
+      </div>
+
+      <div class="stats" role="list" aria-label="Trusted stats">
+        <div class="stat card">
+          <strong>120+</strong><span class="muted">Active partnerships</span>
+        </div>
+        <div class="stat card">
+          <strong>98%</strong><span class="muted">On-time profit payouts</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-right" aria-hidden="true">
+      <div class="device">
+        <div class="chart">
+          <!-- simple illustrative placeholder -->
+          <svg width="320" height="140" viewBox="0 0 320 140" fill="none" xmlns="http://www.w3.org/2000/svg" style="max-width:100%">
+            <rect width="320" height="140" rx="8" fill="url(#g)" />
+            <path d="M10 120 L40 84 L65 100 L100 48 L135 72 L170 32 L210 64 L250 28 L300 58" stroke="#d4af37" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+            <defs>
+              <linearGradient id="g" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#04243a" stop-opacity="0.8"></stop>
+                <stop offset="100%" stop-color="#01121a" stop-opacity="0.6"></stop>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features" class="container fade-in" aria-labelledby="featuresTitle">
+    <h3 id="featuresTitle">Features</h3>
+    <div class="grid" style="margin-top:14px">
+      <div class="card">
+        <h3>Escrow-powered Deposits</h3>
+        <p class="muted">We hold funds until conditions are met — no one can withdraw without agreement.</p>
+      </div>
+      <div class="card">
+        <h3>Automated Profit Splits</h3>
+        <p class="muted">Define percentages up-front and payouts are calculated automatically on withdrawal.</p>
+      </div>
+      <div class="card">
+        <h3>Encrypted Login Vault</h3>
+        <p class="muted">Share prop account credentials securely with role-based access controls.</p>
+      </div>
+      <div class="card">
+        <h3>Dispute Resolution</h3>
+        <p class="muted">Neutral arbitration tools and logs to resolve disagreements quickly and fairly.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how" class="container fade-in" aria-labelledby="howTitle" style="margin-top:30px">
+    <h3 id="howTitle">How it Works</h3>
+    <div class="grid" style="margin-top:12px">
+      <div class="card">
+        <h3>1. Create or Join</h3>
+        <p class="muted">Sign up as a trader or investor and fill in your target amount & split preferences.</p>
+      </div>
+      <div class="card">
+        <h3>2. Fund Escrow</h3>
+        <p class="muted">Participants fund a secure escrow account (Paystack / Flutterwave / USDT options).</p>
+      </div>
+      <div class="card">
+        <h3>3. Trade & Track</h3>
+        <p class="muted">Trader uses the prop account; all P&L is tracked with transparent reporting.</p>
+      </div>
+      <div class="card">
+        <h3>4. Withdraw & Split</h3>
+        <p class="muted">When conditions are met, profits are split automatically and paid out.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="container fade-in" aria-labelledby="testTitle" style="margin-top:30px">
+    <h3 id="testTitle">Trusted by our community</h3>
+    <div class="testimonials" style="margin-top:12px">
+      <div class="testimonial card">
+        <strong>“MarketFlowprop made co-funding painless — clear terms and on-time payouts.”</strong>
+        <p class="muted" style="margin-top:10px">— Tola, Investor</p>
+      </div>
+      <div class="testimonial card">
+        <strong>“I matched with a great trader, and the escrow protected my capital.”</strong>
+        <p class="muted" style="margin-top:10px">— Ahmed, Trader</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST BADGES / FOOTER CTA -->
+  <section class="container fade-in" style="margin-top:30px;text-align:center">
+    <div style="display:inline-flex;gap:12px;align-items:center;flex-wrap:wrap">
+      <div style="background:var(--glass);padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)">Verified KYC</div>
+      <div style="background:var(--glass);padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)">Escrow</div>
+      <div style="background:var(--glass);padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)">24/7 Support</div>
+    </div>
+
+    <div style="margin-top:20px">
+      <button class="btn-primary" id="ctaBottom">Create account — get matched</button>
+    </div>
+  </section>
+
+  <footer>
+    <div style="max-width:1000px;margin:auto">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap">
+        <div style="text-align:left">
+          <strong style="color:var(--white)">MarketFlowprop</strong>
+          <div class="muted" style="margin-top:6px">Secure profit sharing for traders.</div>
+        </div>
+        <div class="muted">© 2025 MarketFlowprop • Privacy • Terms</div>
+      </div>
+    </div>
+  </footer>
+</main>
+
+<!-- SIGN-UP / LOGIN MODAL (re-usable) -->
+<div class="modal" id="modal" aria-hidden="true" role="dialog" aria-labelledby="modalTitle">
+  <div class="box" role="document" aria-modal="true">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="flex:1">
+        <h3 id="modalTitle" style="margin:0">Create an account</h3>
+        <div class="small muted" id="modalHint">Sign up as trader or investor — takes 1 minute.</div>
+      </div>
+      <div class="close-x" id="closeModal" title="Close">✕</div>
+    </div>
+
+    <form id="signupForm" style="margin-top:12px">
+      <input name="fullname" id="fullname" placeholder="Full name" required />
+      <input name="email" id="email" placeholder="Email address" type="email" required />
+      <select id="role" name="role" required>
+        <option value="">Select role</option>
+        <option value="trader">Trader</option>
+        <option value="investor">Investor</option>
+      </select>
+      <input name="amount" id="amount" placeholder="Amount to fund (USD)" type="number" min="1" />
+      <div style="display:flex;gap:10px;margin-top:10px">
+        <input name="password" id="password" placeholder="Password (min 6 chars)" type="password" required />
+        <input name="password2" id="password2" placeholder="Confirm" type="password" required />
+      </div>
+
+      <div id="formMsg" class="small muted" style="margin-top:8px"></div>
+      <button type="submit" class="btn-primary" style="margin-top:12px">Create account</button>
+
+      <div style="margin-top:12px;text-align:center">
+        <button id="switchToLogin" class="btn-ghost" type="button">Already have an account? Log in</button>
+      </div>
+    </form>
+
+    <!-- Login form (hidden by default) -->
+    <form id="loginForm" style="display:none;margin-top:12px">
+      <input id="loginEmail" placeholder="Email" type="email" required />
+      <input id="loginPassword" placeholder="Password" type="password" required />
+      <div id="loginMsg" class="small muted" style="margin-top:8px"></div>
+      <button id="loginBtn" type="submit" class="btn-primary" style="margin-top:10px">Log in</button>
+      <div style="margin-top:12px;text-align:center">
+        <button id="switchToSignup" class="btn-ghost" type="button">Create an account</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // small helpers
+  const $ = sel => document.querySelector(sel);
+  const $$ = sel => document.querySelectorAll(sel);
+
+  // nav style on scroll
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 48) nav.classList.add('solid'); else nav.classList.remove('solid');
+  });
+
+  // scroll helper
+  function scrollToSection(sel){
+    const el = document.querySelector(sel);
+    if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+  document.querySelectorAll('.nav-links a').forEach(a=>{
+    a.addEventListener('click', e=>{
+      e.preventDefault();
+      const href = a.getAttribute('href');
+      if(href && href.startsWith('#')) scrollToSection(href);
+    });
+  });
+
+  // modal behavior
+  const modal = $('#modal');
+  const openBtns = ['#openSignup','#ctaSignup','#ctaBottom'];
+  openBtns.forEach(id => {
+    const btn = $(id);
+    if(btn) btn.addEventListener('click', e => {
+      e.preventDefault();
+      showSignup();
+    });
+  });
+  $('#closeModal').addEventListener('click', ()=> modal.style.display='none');
+  window.addEventListener('click', e=> { if(e.target === modal) modal.style.display='none'});
+
+  // toggle signup/login UI
+  function showSignup(){
+    $('#signupForm').style.display='block';
+    $('#loginForm').style.display='none';
+    $('#modalTitle').innerText='Create an account';
+    $('#modalHint').innerText='Sign up as trader or investor — takes 1 minute.';
+    modal.style.display='flex';
+  }
+  function showLogin(){
+    $('#signupForm').style.display='none';
+    $('#loginForm').style.display='block';
+    $('#modalTitle').innerText='Log in';
+    $('#modalHint').innerText='Welcome back — access your dashboard.';
+    modal.style.display='flex';
+  }
+  $('#switchToLogin').addEventListener('click', showLogin);
+  $('#switchToSignup').addEventListener('click', showSignup);
+
+  // basic client-side validation + dummy submit handler
+  $('#signupForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    $('#formMsg').innerText = '';
+    const fullname = $('#fullname').value.trim();
+    const email = $('#email').value.trim();
+    const role = $('#role').value;
+    const password = $('#password').value;
+    const password2 = $('#password2').value;
+
+    if(!fullname || !email || !role || !password) {
+      $('#formMsg').innerText = 'Please complete all required fields.';
+      return;
+    }
+    if(password !== password2) { $('#formMsg').innerText = 'Passwords do not match.'; return; }
+    if(password.length < 6) { $('#formMsg').innerText = 'Password must be at least 6 characters.'; return; }
+
+    // show a friendly loading message
+    $('#formMsg').innerText = 'Creating account...';
+
+    // TODO: Replace this with your real signup call (Firebase / API)
+    // Simulated delay + success
+    await new Promise(r => setTimeout(r, 900));
+    $('#formMsg').innerText = 'Account created! Please check your email to verify (if enabled).';
+    $('#formMsg').style.color = '#a8f0c6';
+    // Auto-close after short delay:
+    setTimeout(()=>{ modal.style.display='none'; $('#formMsg').style.color=''; $('#signupForm').reset(); }, 1400);
+  });
+
+  // dummy login
+  $('#loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    $('#loginMsg').innerText = 'Signing in...';
+    await new Promise(r => setTimeout(r,700));
+    $('#loginMsg').innerText = 'Logged in (demo). Redirecting...';
+    setTimeout(()=>{ modal.style.display='none'; $('#loginForm').reset(); $('#loginMsg').innerText=''; }, 900);
+  });
+
+  // accessibility: close on Escape
+  window.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape') modal.style.display = 'none';
+  });
+</script>
+</body>
+</html>
